@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	Server "github.com/mudriyjo/go-rest-template/src/go_rest_template/server"
+	App "github.com/mudriyjo/go-rest-template/internal/app"
 )
 
-func executeRequest(r *http.Request, s *Server.Server) *httptest.ResponseRecorder {
+func executeRequest(r *http.Request, s *App.Server) *httptest.ResponseRecorder {
 	response := httptest.NewRecorder()
 	s.Router.ServeHTTP(response, r)
 
@@ -25,7 +25,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 
 func TestHelloWorld(t *testing.T) {
 	// Create a New Server Struct
-	s := Server.CreateNewServer()
+	s := App.CreateNewServer()
 	// Mount Handlers
 	s.MountHandler()
 
