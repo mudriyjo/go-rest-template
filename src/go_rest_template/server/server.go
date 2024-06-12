@@ -1,4 +1,4 @@
-package main
+package Server
 
 import (
 	"net/http"
@@ -17,14 +17,9 @@ func CreateNewServer() *Server {
 	}
 }
 
-func (s *Server) mountHandler() {
+func (s *Server) MountHandler() {
 	s.Router.Use(middleware.Logger)
 	s.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello, world"))
 	})
-}
-func main() {
-	server := CreateNewServer()
-	server.mountHandler()
-	http.ListenAndServe(":8080", server.Router)
 }
