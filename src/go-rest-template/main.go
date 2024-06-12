@@ -7,11 +7,24 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func main() {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+type Server struct {
+	Router *chi.Mux
+}
+
+func CreateNewServer() *Server {
+	return &Server{
+		chi.NewRouter(),
+	}
+}
+
+func (s *Server) mountHandler() {
+	s.Router.Use(middleware.Logger)
+	s.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello, world"))
 	})
-	http.ListenAndServe(":8080", r)
+}
+func main() {
+	server := CreateNewServer()
+	server.mountHandler()
+	http.ListenAndServe(":8080", server.Router)
 }
