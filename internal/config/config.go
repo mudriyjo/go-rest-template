@@ -2,7 +2,6 @@ package config
 
 import (
 	"os"
-	"strconv"
 
 	"github.com/go-yaml/yaml"
 )
@@ -44,36 +43,21 @@ func GetConfig() Config {
 }
 
 func readEnv(cfg *Config) {
-	updateConfigFieldByName(cfg, func(cfg *Config, value string) {
-		cfg.Server.Host = value
-	}, "SERVER_HOST")
-	updateConfigFieldByName(cfg, func(cfg *Config, value string) {
-		res, err := strconv.Atoi(value)
-		if err != nil {
-			panic(err)
-		}
-		cfg.Server.Port = res
-	}, "SERVER_PORT")
-
-	updateConfigFieldByName(cfg, func(cfg *Config, value string) {
-		cfg.Database.Host = value
-	}, "DATABASE_HOST")
-	updateConfigFieldByName(cfg, func(cfg *Config, value string) {
-		res, err := strconv.Atoi(value)
-		if err != nil {
-			panic(err)
-		}
-		cfg.Database.Port = res
-	}, "DATABASE_PORT")
-
-	updateConfigFieldByName(cfg, func(cfg *Config, value string) {
-		cfg.Database.DBname = value
-	}, "DATABASE_NAME")
+	arr := [][]interface{}{
+		{&cfg.Server.Host, "SERVER_HOST"},
+		{&cfg.Server.Port, "SERVER_PORT"},
+		{&cfg.Database.Host, "DATABASE_HOST"},
+		{&cfg.Database.Port, "DATABASE_PORT"},
+		{&cfg.Database.DBname, "DATABASE_NAME"},
+	}
+	updateConfigFieldByNameV2(arr)
 }
 
-func updateConfigFieldByName(cfg *Config, fnSetter func(cfg *Config, value string), name string) {
-	val, ok := os.LookupEnv(name)
-	if ok {
-		fnSetter(cfg, val)
+func updateConfigFieldByNameV2(arr [][]interface{}) {
+	for _, tup := range arr {
+		val, ok := os.LookupEnv(tup[1].(string))
+		if ok {
+			tup[0] = val
+		}
 	}
 }
